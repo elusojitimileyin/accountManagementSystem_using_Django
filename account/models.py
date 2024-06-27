@@ -35,7 +35,7 @@ class Transaction(models.Model):
         ('P', 'PENDING'),
     ]
 
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='transactions')
 
     transaction_type = models.CharField(max_length=3,
                                         choices=TRANSACTION_TYPE,
@@ -47,3 +47,6 @@ class Transaction(models.Model):
     transaction_status = models.CharField(max_length=1,
                                           choices=TRANSACTION_STATUS,
                                           default='S')
+
+    def str(self):
+        return f'{self.amount} {self.description}'
