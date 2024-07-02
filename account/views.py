@@ -151,6 +151,6 @@ def withdraw(request):
     #
 
 
-class CreateAccount(CreateAPIView):
-    queryset = Account.objects.all()
-    serializer_class = AccountCreateSerializer
+# class CreateAccount(CreateAPIView):
+#     queryset = Account.objects.all()
+#     serializer_class = AccountCreateSerializer
