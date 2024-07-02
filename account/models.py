@@ -13,8 +13,6 @@ class Account(models.Model):
                                       default=generate_account_number,
                                       unique=True,
                                       primary_key=True)
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
     pin = models.CharField(max_length=4, validators=[validate_pin])
     account_balance = models.DecimalField(max_digits=15, decimal_places=2, default=0.00)
     ACCOUNT_TYPE = [
