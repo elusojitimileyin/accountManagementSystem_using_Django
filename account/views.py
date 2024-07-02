@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 from rest_framework import status, generics, viewsets
 from rest_framework.decorators import api_view
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, CreateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
@@ -149,3 +149,8 @@ def withdraw(request):
     # except Account.DoesNotExist:
     #     return Response({"message": "Account does not exist"}, status=status.HTTP_404_NOT_FOUND)
     #
+
+
+class CreateAccount(CreateAPIView):
+    queryset = Account.objects.all()
+    serializer_class = AccountCreateSerializer

@@ -22,4 +22,4 @@ class AccountSerializer(serializers.ModelSerializer):
 class AccountCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
-        fields = ['pin', 'account_type']
+        fields = ['user', 'account_number', 'pin', 'account_type']
