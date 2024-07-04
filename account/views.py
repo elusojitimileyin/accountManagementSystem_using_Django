@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+from django.core.mail import send_mail
 from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
@@ -217,24 +218,24 @@ class Withdraw(APIView):
 #     serializer_class = AccountCreateSerializer
 
 
-class CheckBalance(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        serializer = QueryBalanceSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        account_number = serializer.data['account_number']
-        pin = serializer.data['pin']
-        transaction_details = {}
-        account = get_object_or_404(Account, account_number=account_number)
-        if pin != account.pin:
-            raise PermissionDenied
-        else:
-            balance = account.account_balance
-            transaction_details['account_number'] = account_number
-            transaction_details['balance'] = balance
-            return Response(data=transaction_details, status=status.HTTP_200_OK)
-
+# class CheckBalance(APIView):
+#     permission_classes = [IsAuthenticated]
+#
+#     def get(self, request):
+#         serializer = QueryBalanceSerializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         account_number = serializer.data['account_number']
+#         pin = serializer.data['pin']
+#         transaction_details = {}
+#         account = get_object_or_404(Account, account_number=account_number)
+#         if pin != account.pin:
+#             raise PermissionDenied
+#         else:
+#             balance = account.account_balance
+#             transaction_details['account_number'] = account_number
+#             transaction_details['balance'] = balance
+#             return Response(data=transaction_details, status=status.HTTP_200_OK)
+#
 
 class TransferViewSet(ModelViewSet):
     queryset = Transaction.objects.all()
@@ -281,3 +282,19 @@ class TransferViewSet(ModelViewSet):
         return Response(data="Method not supported", status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
+class CheckBalance(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        account = get_object_or_404(Account, user=user.id)
+        balance_details = {'account_number': account.account_number, 'balance': account.account_balance}
+        message = f'''
+               your new balance is 
+               {account.account_balance}
+               '''
+        send_mail(subject='Your account balance',
+                  message=message,
+                  from_email='noreply@localhost.com',
+                  recipient_list=['adewunmi@gmail.com'])
+        return Response(data=balance_details, status=status.HTTP_200_OK)
