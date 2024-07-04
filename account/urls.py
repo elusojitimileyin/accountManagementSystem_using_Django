@@ -9,7 +9,7 @@ urlpatterns = [
     # path('accounts/', views.ListAccount.as_view()),
     # path('accounts/<str:pk>/', views.AccountDetail.as_view()),
     path('', include(router.urls)),
-    path('deposit/', views.deposit),
-    path('withdraw/', views.withdraw),
+    path('deposit', views.Deposit.as_view()),
+    path('withdraw', views.Withdraw.as_view()),
     # path('create', views.CreateAccount.as_view()),
 ]
