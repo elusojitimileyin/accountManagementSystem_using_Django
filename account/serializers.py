@@ -31,9 +31,10 @@ class DepositWithdrawSerializer(serializers.Serializer):
 
 class QueryBalanceSerializer(serializers.Serializer):
     account_number = serializers.CharField(max_length=10)
-    amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+    pin = serializers.CharField(max_length=4)
 
 
-class TransferSerializer(serializers.ModelSerializer):
-
-
+class TransferSerializer(serializers.Serializer):
+    sender_account = serializers.CharField(max_length=10)
+    receiver_account = serializers.CharField(max_length=10)
+    amount = serializers.DecimalField(max_digits=15, decimal_places=2)

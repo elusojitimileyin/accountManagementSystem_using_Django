@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 from rest_framework import status, generics, viewsets
@@ -240,13 +241,13 @@ class TransferViewSet(ModelViewSet):
     serializer_class = TransferSerializer
     permission_classes = [IsAuthenticated]
 
+    @transaction.atomic()
     def create(self, request, *args, **kwargs):
         serializer = TransferSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         sender_account = serializer.data['sender_account']
         receiver_account = serializer.data['receiver_account']
         amount = Decimal(serializer.data['amount'])
-        transaction_details = {}
         sender_account_from = get_object_or_404(Account, pk=sender_account)
         receiver_account_to = get_object_or_404(Account, pk=receiver_account)
         balance = sender_account_from.account_balance
@@ -258,7 +259,9 @@ class TransferViewSet(ModelViewSet):
             return Response(data={"message": "Insufficient balance"}, status=status.HTTP_400_BAD_REQUEST)
         try:
             transferred_balance = receiver_account_to.account_balance + amount
-            Account.objects.filter(pk=receiver_account).update(balance=transferred_balance)
+            Account.objects.filter(pk=receiver_account).update(account_balance=transferred_balance)
+            new_balance = sender_account_from.account_balance - amount
+            Account.objects.filter(pk=receiver_account).update(account_balance=new_balance)
         except Account.DoesNotExist:
             return Response(data={"message": "Transaction failed"}, status=status.HTTP_400_BAD_REQUEST)
         Transaction.objects.create(
@@ -273,3 +276,8 @@ class TransferViewSet(ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         return Response(data="Method not supported", status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def list(self, request, *args, **kwargs):
+        return Response(data="Method not supported", status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+

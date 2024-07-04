@@ -4,6 +4,7 @@ from rest_framework.routers import SimpleRouter
 
 router = SimpleRouter()
 router.register('accounts', views.AccountViewSet)
+router.register('transfer', views.TransferViewSet, basename='transfers')
 
 urlpatterns = [
     # path('accounts/', views.ListAccount.as_view()),
